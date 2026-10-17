@@ -1,0 +1,45 @@
+{
+  "_comment": "Single source of truth for model names and AI routing. Edge Functions and Python jobs both read this file. API keys are NOT here: GROQ_API_KEY / XAI_API_KEY / GEMINI_API_KEY come from env / Supabase secrets.",
+
+  "chat": {
+    "_comment": "Basic answers: assistant Q&A, voice/text command parsing, review sentiment, insight text. Any OpenAI-compatible API. Switch provider with CHAT_PROVIDER=groq|xai (env) or 'default_provider' below.",
+    "default_provider": "groq",
+    "providers": {
+      "groq": {
+        "base_url": "https://api.groq.com/openai/v1",
+        "api_key_env": "GROQ_API_KEY",
+        "model": "openai/gpt-oss-120b",
+        "fast_model": "llama-3.1-8b-instant"
+      },
+      "xai": {
+        "base_url": "https://api.x.ai/v1",
+        "api_key_env": "XAI_API_KEY",
+        "model": "grok-4-fast-non-reasoning",
+        "fast_model": "grok-4-fast-non-reasoning"
+      }
+    },
+    "temperature": 0.2,
+    "max_tokens": 800,
+    "timeout_ms": 20000
+  },
+
+  "gemini": {
+    "_comment": "Search and multimodal only: bill photos, voice audio, photo/product search embeddings.",
+    "api_key_env": "GEMINI_API_KEY",
+    "base_url": "https://generativelanguage.googleapis.com/v1beta",
+    "vision_model": "gemini-2.5-flash",
+    "embedding_model": "gemini-embedding-2",
+    "embedding_dimensions": 768,
+    "timeout_ms": 45000,
+    "_embedding_note": "Changing embedding_model or embedding_dimensions requires re-embedding the whole catalog (see docs/OPERATIONS.md). The DB column is vector(768)."
+  },
+
+  "limits": {
+    "max_retries": 3,
+    "backoff_base_ms": 1000,
+    "cache_ttl_hours": { "bill_scan": 720, "voice": 24, "assistant": 1, "embedding_query": 168, "sentiment": 8760 },
+    "worker_batch_size": 10,
+    "max_image_bytes": 6000000,
+    "max_audio_bytes": 8000000
+  }
+}

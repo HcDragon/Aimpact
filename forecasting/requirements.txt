@@ -1,0 +1,6 @@
+requests==2.32.3
+python-dotenv==1.0.1
+# For forecasting/model.py (Prophet forecasts + Apriori bundles):
+prophet==1.1.6
+pandas==2.2.3
+mlxtend==0.23.4

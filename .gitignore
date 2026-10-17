@@ -1,0 +1,11 @@
+.env
+*.env
+!*.env.example
+supabase/functions/.env
+supabase/.branches
+supabase/.temp
+node_modules/
+__pycache__/
+*.pyc
+.venv/
+reports/out/
