@@ -7,7 +7,7 @@ npx supabase start            # Postgres, Auth, Storage, Realtime, Edge runtime 
 npx supabase db reset         # migrations + seed (3 demo businesses, 90 days of sales)
 cp supabase/functions/.env.example supabase/functions/.env   # add GROQ_API_KEY / GEMINI_API_KEY
 npx supabase functions serve --env-file supabase/functions/.env
-python3 -m http.server 5173 --directory dummy-frontend       # http://127.0.0.1:5173
+(cd dummy-frontend && npm install && npm run dev)            # http://127.0.0.1:5173
 bash scripts/smoke_test.sh    # API smoke test (passes without AI keys too)
 ```
 

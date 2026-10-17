@@ -64,10 +64,16 @@ def main() -> None:
 
     out = {"generated_at": dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds"),
            "model_version": cfg["model_version"], "businesses": results}
+    command = "python forecasting/evaluate_forecasts.py " + " ".join(sys.argv[1:])
+    # Stored for the app's evidence panel (public.forecast_evaluations); one row per business per run.
+    db.insert("forecast_evaluations", [{
+        "business_id": bid, "model_version": cfg["model_version"], "holdout_start": r["holdout_start"],
+        "holdout_days": r["holdout_days"], "tiers": r["tiers"], "command": command.strip(),
+    } for bid, r in results.items()])
     REPORTS_DIR.mkdir(exist_ok=True)
     (REPORTS_DIR / "forecast_metrics.json").write_text(json.dumps(out, indent=2))
     (REPORTS_DIR / "evaluation.md").write_text(
-        write_markdown(out, "python forecasting/evaluate_forecasts.py " + " ".join(sys.argv[1:])))
+        write_markdown(out, command))
     print(f"wrote {REPORTS_DIR / 'evaluation.md'}")
 
 

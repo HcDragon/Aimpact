@@ -29,7 +29,7 @@ supabase/
   functions/         # Edge Functions; shared code in functions/_shared/
   seed.sql           # demo data (3 businesses, 90 days of sales)
 config/ai.json       # model names + AI limits (the only place model names live)
-dummy-frontend/      # plain HTML/JS dev UI exercising every feature (real frontend is a teammate's)
+dummy-frontend/      # throwaway React + Vite + Tailwind dev UI exercising every feature (real frontend is a teammate's)
 forecasting/         # nightly job runner; model.py adapts ml/ (Prophet/Apriori); evaluate_forecasts.py
 ml/                  # ML package: forecast tiers + evaluation, bundles, EasyOCR bill-scan service (ml/ocr/server.py)
 shared/ai/           # prompts, JSON schemas, validator fixtures for the Python ML tools
@@ -101,7 +101,7 @@ Key tables: `businesses`, `users`, `staff_roles`, `products`, `stock_batches`, `
 npx supabase start
 npx supabase db reset                                   # migrations + seed
 npx supabase functions serve --env-file supabase/functions/.env
-python3 -m http.server 5173 --directory dummy-frontend  # dev UI; shop@demo.test / password123
+cd dummy-frontend && npm install && npm run dev       # dev UI on :5173; shop@demo.test / password123
 
 # Forecasting job (model in ml/; evaluate first so losing tiers use the baseline)
 pip install -r forecasting/requirements.txt

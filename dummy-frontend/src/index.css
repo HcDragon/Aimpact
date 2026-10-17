@@ -1,0 +1,53 @@
+@import "tailwindcss";
+@import "@fontsource-variable/inter";
+
+/* Design tokens: light by default, dark from the OS setting. Tailwind utilities read them,
+   e.g. bg-surface, text-muted, border-line, text-series-b, bg-ok/10. */
+:root {
+  --bg: #f6f7fb; --surface: #ffffff; --surface-2: #f3f5f9; --ink: #0f172a; --muted: #64748b; --line: #e4e8f0;
+  --accent: #4f46e5; --accent-strong: #4338ca; --on-accent: #ffffff;
+  --ok: #059669; --warn: #b45309; --crit: #e11d48;
+  --series-a: #4f46e5; --series-b: #db2777; --series-c: #059669; --band: rgb(219 39 119 / .12);
+  --nav: #0f172a; --nav-ink: #cbd5e1; --nav-muted: #64748b; --nav-hover: #1e293b;
+  --shadow: 0 1px 2px rgb(15 23 42 / .04), 0 1px 3px rgb(15 23 42 / .06);
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0b1020; --surface: #111827; --surface-2: #172033; --ink: #e5e9f2; --muted: #94a3b8; --line: #1f2a3d;
+    --accent: #818cf8; --accent-strong: #a5b4fc; --on-accent: #0b1020;
+    --ok: #34d399; --warn: #fbbf24; --crit: #fb7185;
+    --series-a: #818cf8; --series-b: #f472b6; --series-c: #34d399; --band: rgb(244 114 182 / .16);
+    --nav: #080c18; --nav-ink: #cbd5e1; --nav-muted: #64748b; --nav-hover: #151d30;
+    --shadow: 0 1px 2px rgb(0 0 0 / .3);
+    color-scheme: dark;
+  }
+}
+
+@theme inline {
+  --color-bg: var(--bg); --color-surface: var(--surface); --color-surface-2: var(--surface-2);
+  --color-ink: var(--ink); --color-muted: var(--muted); --color-line: var(--line);
+  --color-accent: var(--accent); --color-accent-strong: var(--accent-strong); --color-on-accent: var(--on-accent);
+  --color-ok: var(--ok); --color-warn: var(--warn); --color-crit: var(--crit);
+  --color-series-a: var(--series-a); --color-series-b: var(--series-b); --color-series-c: var(--series-c);
+  --color-band: var(--band);
+  --color-nav: var(--nav); --color-nav-ink: var(--nav-ink); --color-nav-muted: var(--nav-muted); --color-nav-hover: var(--nav-hover);
+  --shadow-card: var(--shadow);
+  --font-sans: "Inter Variable", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+@layer base {
+  body { @apply bg-bg text-ink font-sans text-[13.5px] leading-relaxed antialiased; font-feature-settings: "cv11", "ss01"; }
+  h2 { @apply text-2xl font-semibold tracking-tight; }
+  h3 { @apply text-[15px] font-semibold tracking-tight; }
+  a { @apply text-accent; }
+  input:not([type="file"]):not([type="checkbox"]), select, textarea {
+    @apply h-9 rounded-lg border border-line bg-surface px-3 text-ink shadow-xs transition-colors placeholder:text-muted/70 hover:border-muted/40 focus:border-accent;
+  }
+  textarea { @apply h-auto py-2; }
+  input[type="file"] { @apply text-xs text-muted file:mr-3 file:h-9 file:cursor-pointer file:rounded-lg file:border file:border-line file:bg-surface-2 file:px-3 file:text-ink; }
+  input[type="number"] { @apply w-28; }
+  :focus-visible { @apply outline-2 outline-accent/60 outline-offset-1; }
+  code { @apply rounded-md bg-surface-2 px-1.5 py-0.5 font-mono text-xs; }
+  ::selection { @apply bg-accent/20; }
+}

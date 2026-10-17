@@ -37,3 +37,10 @@ ml/reports/*/
 # OS / editor
 .DS_Store
 .vscode/
+
+# Dummy frontend build output
+dummy-frontend/dist/
+
+# Local env overrides (Vite and others)
+.env.local
+.env.*.local

@@ -1,7 +1,7 @@
 # Integration guide
 
 How the real frontend and the Telegram bot talk to the backend. Every feature here is wired up
-in `dummy-frontend/`, so copy from there when in doubt (look for `rpc(` and `fn(` calls).
+in `dummy-frontend/`, so copy from there when in doubt (look for `rpc(` and `fn(` calls in `dummy-frontend/js/pages/`).
 
 - Money is **integer paise** everywhere (`₹12.50` → `1250`). Show it as ₹ with Indian grouping.
 - Dates are `YYYY-MM-DD` in the API. Show them as DD/MM/YYYY in IST.
@@ -31,7 +31,12 @@ If there are none, onboard with `rpc("create_business", { p_name, p_business_typ
 | Batches of one item | `from("stock_batches").select("*").eq("product_id", pid).gt("qty_remaining", 0)` |
 | Alerts | `from("alerts").select("*").eq("business_id", id).eq("status", "open")`. Realtime is enabled on `alerts`. |
 | Reorder suggestions | `rpc("reorder_suggestions", { p_business_id })` |
-| Forecast chart | `from("forecasts")` + `from("daily_usage")` |
+| Forecast chart | `from("forecasts")` (`method`: prophet, category, moving_average, seasonal_naive, rule) + `from("daily_usage")`; dishes: `daily_product_sales` |
+| Model vs baseline evidence | latest `from("forecast_evaluations")` row: `tiers.{tier}.model/baseline.{wape,mape,coverage}`, `winner`, `policy_simulation` |
+| Frequently bought together | `from("bundle_suggestions")` (`antecedent_ids`, `consequent_ids`, `support`, `confidence`, `lift`) |
+| Dead stock | `rpc("dead_stock", { p_business_id, p_days: 30 })` → on-hand value, last used, suggested discount band |
+| Stock that may expire unused | `rpc("perishable_risk", { p_business_id })` → per batch: `use_before_expiry`, `at_risk_qty`, `at_risk_value_paise` |
+| Restaurant prep list | `rpc("prep_list", { p_business_id, p_day? })` → per dish: `expected`, `avg_daily_wastage`, `prep_qty`, `basis` |
 | Profit report | `rpc("profit_report", { p_business_id, p_from, p_to })` |
 | GST summary | `rpc("gst_report", { p_business_id, p_from, p_to })` |
 | Khata balances | `from("khata_balances").select("*").eq("business_id", id)` |
@@ -71,7 +76,7 @@ Call them with `supabase.functions.invoke(name, { body: { business_id, ... } })`
 response instead of an error, so show the manual form in that case.
 
 Audio: Gemini accepts WAV, MP3, AAC, OGG and FLAC. Browser `MediaRecorder` produces WebM, so the
-dummy frontend converts to 16 kHz WAV (`recordAudio` in `dummy-frontend/lib.js`). Telegram
+dummy frontend converts to 16 kHz WAV (`recordAudio` in `dummy-frontend/js/media.js`). Telegram
 voice notes are OGG/Opus and can be sent as is.
 
 ---

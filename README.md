@@ -12,7 +12,7 @@ Prerequisites: Docker, Node 18+, Python 3.10+.
 npx supabase start && npx supabase db reset
 cp supabase/functions/.env.example supabase/functions/.env     # optional: add GROQ_API_KEY, GEMINI_API_KEY
 npx supabase functions serve --env-file supabase/functions/.env &
-python3 -m http.server 5173 --directory dummy-frontend
+(cd dummy-frontend && npm install && npm run dev)
 ```
 
 Open http://127.0.0.1:5173 and sign in as `shop@demo.test`, `restaurant@demo.test` or
@@ -27,7 +27,7 @@ Everything works without AI keys. AI features fall back to manual or rule-based 
 | `supabase/functions/` | `scan-bill`, `voice-command`, `assistant`, `product-search`, `import-orders-csv`, `ai-worker`, `telegram-link`, `notify-telegram` |
 | `supabase/seed.sql` | Three demo businesses with 90 days of sales, purchases, recipes and wholesaler listings |
 | `config/ai.json` | The only place model names live |
-| `dummy-frontend/` | Plain HTML/JS UI that exercises every feature. To be replaced by the real frontend. |
+| `dummy-frontend/` | Throwaway React + Vite + Tailwind dev UI exercising every feature (incl. ML). Delete when the real frontend lands. |
 | `forecasting/` | Nightly job runner plus `model.py` (Prophet/Apriori from `ml/`) and `evaluate_forecasts.py` |
 | `ml/` | ML package: forecasting tiers, holdout evaluation, bundles, EasyOCR bill-scan fallback service. See [ml/README.md](ml/README.md) |
 | `shared/ai/` | Prompts, JSON schemas and validator fixtures used by the Python ML tools and evals |

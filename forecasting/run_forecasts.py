@@ -100,6 +100,18 @@ def run(db: Supabase, business: dict, horizon: int, model) -> int:
         for f in model.forecast_business(business=business, products=list(products.values()), series=series,
                                          today=today, horizon=horizon):
             rows.append(f)
+        if business.get("business_type") == "restaurant":
+            # Dish forecasts drive the morning prep list (prep_list()); reorder_suggestions() ignores dishes.
+            dishes = {p["id"]: p for p in db.select("products", {
+                "select": "id,name,category,unit,kind", "business_id": f"eq.{bid}", "is_active": "eq.true", "kind": "eq.dish"})}
+            dish_sales = db.select("daily_product_sales", {"select": "product_id,day,qty", "business_id": f"eq.{bid}",
+                                                           "kind": "eq.dish", "day": f"gte.{since}"})
+            dish_series: dict[str, dict[date, float]] = defaultdict(dict)
+            for u in dish_sales:
+                d = date.fromisoformat(u["day"])
+                dish_series[u["product_id"]][d] = dish_series[u["product_id"]].get(d, 0.0) + float(u["qty"])
+            rows += list(model.forecast_business(business=business, products=list(dishes.values()), series=dish_series,
+                                                 today=today, horizon=horizon))
     else:
         for pid, hist in series.items():
             if len([v for v in hist.values() if v > 0]) < 7:

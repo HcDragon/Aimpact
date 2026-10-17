@@ -1,0 +1,26 @@
+{
+  "name": "dukaan-sahayak-dummy-frontend",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Throwaway dev UI exercising every backend and ML feature. Delete when the real frontend lands.",
+  "scripts": {
+    "dev": "vite --port 5173",
+    "build": "vite build",
+    "preview": "vite preview --port 5173"
+  },
+  "dependencies": {
+    "@fontsource-variable/inter": "^5.2.5",
+    "@supabase/supabase-js": "^2.49.4",
+    "@zxing/browser": "^0.1.5",
+    "lucide-react": "^0.511.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.1.7",
+    "@vitejs/plugin-react": "^4.4.1",
+    "tailwindcss": "^4.1.7",
+    "vite": "^6.3.5"
+  }
+}
