@@ -1,0 +1,120 @@
+# SmartInventory ML config: model names, horizons, thresholds, seeds.
+# Every tunable number used by the nightly job lives here.
+
+model_version: "ml-0.1.0"
+
+storage:
+  # "local" reads/writes CSVs under ml/data/ (dataset supplied separately; see data/README.md).
+  # "supabase" uses SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY from .env.
+  backend: local
+  local_dir: data
+
+gemini:
+  # Confirm both names against the models available on our key (open question).
+  # Changing embedding_model means re-running embeddings/reembed.py.
+  flash_model: gemini-flash-latest
+  embedding_model: gemini-embedding-2
+  embedding_dim: 768
+  max_retries: 5
+  backoff_base_seconds: 2.0
+  min_seconds_between_calls: 4.0   # free-tier pacing
+  cache_dir: .cache/gemini
+
+seed:
+  random_seed: 42            # Prophet uncertainty sampling
+  as_of: null                # forecast start date; null = today; set e.g. "2026-10-17" to pin a demo run
+
+forecasting:
+  horizon_days: 14
+  holdout_days: 28
+  interval_width: 0.90       # yhat_lower / yhat_upper band
+  uncertainty_samples: 300   # Prophet default is 1000; lower keeps the job fast
+  top_share: 0.20            # forecast the top ~20% of items individually
+  min_history_days: 56       # below this an item is cold start -> method: rule
+  slow_mover_method: category   # category | moving_avg
+  moving_average_days: 28
+  min_category_items: 2      # category Prophet needs at least this many items
+  festivals:
+    # Extra holiday regressors with lead/lag windows (FR-A2).
+    # Dates for 2025-2027; extend before using other years.
+    diwali:
+      dates: ["2025-10-20", "2026-11-08", "2027-10-29"]
+      lower_window: -10
+      upper_window: 2
+    holi:
+      dates: ["2025-03-14", "2026-03-04", "2027-03-22"]
+      lower_window: -3
+      upper_window: 1
+    eid_al_fitr:
+      dates: ["2025-03-31", "2026-03-20", "2027-03-10"]
+      lower_window: -4
+      upper_window: 1
+    ganesh_chaturthi:
+      dates: ["2025-08-27", "2026-09-14", "2027-09-04"]
+      lower_window: -3
+      upper_window: 3
+
+inventory:
+  default_lead_time_days: 3
+  default_pack_size: 1
+  # Cold-start rule: forecast = average daily sales, upper bound = average x (1 + factor).
+  rule_safety_factor: 0.5
+  # Units sold in whole pieces; others are rounded to 0.1.
+  countable_units: [pcs, packet, pack, bottle, box, plate, portion, dozen]
+
+restaurant:
+  wastage_lookback_days: 14
+  max_wastage_reduction: 0.30   # prep list never cut by more than 30% of forecast
+
+shop:
+  dead_stock_days: 30
+  discount_bands:              # days unsold -> suggested discount
+    - {min_days: 30, band: "10-15%"}
+    - {min_days: 60, band: "20-30%"}
+    - {min_days: 90, band: "30-50% or return to supplier"}
+  bundles:
+    lookback_days: 90
+    min_support: 0.01
+    min_confidence: 0.10
+    min_lift: 1.2
+    max_rules: 20
+
+ocr:
+  engine: easyocr
+  languages: [en]              # add "hi" for Devanagari bills (EasyOCR pairs hi only with en)
+  use_gpu: true                # Apple MPS when available, else CPU
+  model_dir: .cache/easyocr    # pretrained detector/recogniser weights, downloaded on first use
+  preprocess:
+    target_long_side: 2000     # upscale small photos / downscale huge ones
+    perspective_crop: true     # find the paper and flatten it
+    deskew: true
+    max_skew_degrees: 15
+    denoise: true
+    clahe: true
+  readtext:                    # EasyOCR readtext() parameters
+    decoder: beamsearch
+    beam_width: 5
+    text_threshold: 0.6
+    low_text: 0.35
+    link_threshold: 0.4
+    width_ths: 0.3             # keep table columns as separate boxes
+    contrast_ths: 0.2
+    adjust_contrast: 0.6
+    mag_ratio: 1.0
+    canvas_size: 2560
+    add_margin: 0.15           # wider boxes so long codes (GSTIN) are not cut off
+  second_pass_binarized: true  # OCR a binarised copy too; keep the more confident read per box
+  reread_numeric_below: 0.85   # re-read number boxes below this confidence with a digit allowlist
+  reread_scale: 3.0
+  low_confidence: 0.5          # tokens below this become owner-facing warnings
+  line_merge_ratio: 0.55       # words share a line if y-centres differ < ratio x median height
+  arithmetic_tolerance: 0.01   # qty x price vs line total, relative
+  fallback: none               # none | gemini: try Gemini when the OCR result is not accepted
+
+matching:
+  auto_match_threshold: 0.86   # above: match silently; below: ask the owner
+  merge_suggest_threshold: 0.92
+
+reviews:
+  aspects: [taste, price, delivery, hygiene, quantity]
+  batch_size: 20

@@ -1,0 +1,85 @@
+{
+  "_comment": "Validator contract cases shared by the TS and Python validators. Not a dataset.",
+  "cases": [
+    {
+      "name": "clean bill, line totals before GST, total with GST",
+      "input": {"supplier_name": "Gupta Distributors", "invoice_date": "2026-10-15", "gstin": "27ABCDE1234F1Z5",
+        "items": [{"name": "Parle-G 80g", "qty": 48, "unit": "packet", "unit_price": 8.5, "gst_rate": 18, "line_total": 408},
+                  {"name": "Maggi 70g", "qty": 24, "unit": "packet", "unit_price": 12, "gst_rate": 12, "line_total": 288}],
+        "invoice_total": 803.0, "warnings": []},
+      "expect": {"valid": true, "accepted": true, "flag_fields": []}
+    },
+    {
+      "name": "line totals include GST, round-off on total",
+      "input": {"supplier_name": "Shree Dairy", "invoice_date": "2026-10-16", "gstin": null,
+        "items": [{"name": "Paneer", "qty": 5, "unit": "kg", "unit_price": 380, "gst_rate": 5, "line_total": 1995}],
+        "invoice_total": 1995, "warnings": []},
+      "expect": {"valid": true, "accepted": true, "flag_fields": []}
+    },
+    {
+      "name": "line totals do not add up to invoice total",
+      "input": {"supplier_name": "Metro", "invoice_date": "2026-10-10", "gstin": null,
+        "items": [{"name": "Sugar", "qty": 10, "unit": "kg", "unit_price": 40, "gst_rate": 0, "line_total": 400},
+                  {"name": "Atta 5kg", "qty": 4, "unit": "pcs", "unit_price": 230, "gst_rate": 0, "line_total": 920}],
+        "invoice_total": 1520, "warnings": []},
+      "expect": {"valid": true, "accepted": false, "flag_fields": ["invoice_total"]}
+    },
+    {
+      "name": "one line total disagrees with qty x price",
+      "input": {"supplier_name": "Metro", "invoice_date": "2026-10-10", "gstin": null,
+        "items": [{"name": "Toor Dal", "qty": 10, "unit": "kg", "unit_price": 140, "gst_rate": 0, "line_total": 1700}],
+        "invoice_total": 1700, "warnings": []},
+      "expect": {"valid": true, "accepted": false, "flag_fields": ["items[0].line_total"]}
+    },
+    {
+      "name": "invoice total missing is flagged for the owner",
+      "input": {"supplier_name": null, "invoice_date": null, "gstin": null,
+        "items": [{"name": "Bread", "qty": 6, "unit": "pcs", "unit_price": 40, "gst_rate": null, "line_total": 240}],
+        "invoice_total": null, "warnings": ["total torn off"]},
+      "expect": {"valid": true, "accepted": false, "flag_fields": ["invoice_total", "invoice_date"]}
+    },
+    {
+      "name": "GST rate outside the allowed set",
+      "input": {"supplier_name": "X", "invoice_date": "2026-10-10", "gstin": null,
+        "items": [{"name": "Soap", "qty": 12, "unit": "pcs", "unit_price": 30, "gst_rate": 15, "line_total": 360}],
+        "invoice_total": 360, "warnings": []},
+      "expect": {"valid": false}
+    },
+    {
+      "name": "quantity is a string",
+      "input": {"supplier_name": "X", "invoice_date": "2026-10-10", "gstin": null,
+        "items": [{"name": "Soap", "qty": "12", "unit": "pcs", "unit_price": 30, "gst_rate": 18, "line_total": 360}],
+        "invoice_total": 360, "warnings": []},
+      "expect": {"valid": false}
+    },
+    {
+      "name": "malformed JSON text",
+      "input": "{\"supplier_name\": \"X\", \"items\": [",
+      "expect": {"valid": false}
+    },
+    {
+      "name": "JSON wrapped in a markdown fence",
+      "input": "```json\n{\"supplier_name\": \"X\", \"invoice_date\": \"2026-10-10\", \"gstin\": null, \"items\": [{\"name\": \"Soap\", \"qty\": 2, \"unit\": \"pcs\", \"unit_price\": 30, \"gst_rate\": 0, \"line_total\": 60}], \"invoice_total\": 60, \"warnings\": []}\n```",
+      "expect": {"valid": true, "accepted": true, "flag_fields": []}
+    },
+    {
+      "name": "extra field the schema does not allow",
+      "input": {"supplier_name": "X", "invoice_date": "2026-10-10", "gstin": null, "discount": 10,
+        "items": [{"name": "Soap", "qty": 2, "unit": "pcs", "unit_price": 30, "gst_rate": 0, "line_total": 60}],
+        "invoice_total": 60, "warnings": []},
+      "expect": {"valid": false}
+    },
+    {
+      "name": "no items",
+      "input": {"supplier_name": null, "invoice_date": null, "gstin": null, "items": [], "invoice_total": null, "warnings": ["not a bill"]},
+      "expect": {"valid": false}
+    },
+    {
+      "name": "impossible date",
+      "input": {"supplier_name": "X", "invoice_date": "2026-13-45", "gstin": null,
+        "items": [{"name": "Soap", "qty": 2, "unit": "pcs", "unit_price": 30, "gst_rate": 0, "line_total": 60}],
+        "invoice_total": 60, "warnings": []},
+      "expect": {"valid": false}
+    }
+  ]
+}

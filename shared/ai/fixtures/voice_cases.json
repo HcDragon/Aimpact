@@ -1,0 +1,29 @@
+{
+  "_comment": "Validator contract cases shared by the TS and Python validators. Not a dataset.",
+  "cases": [
+    {"name": "add stock, Hinglish",
+     "input": {"intent": "add_stock", "item": "Parle-G", "qty": 20, "unit": "packet", "language": "hinglish", "needs_clarification": false},
+     "expect": {"valid": true, "can_write": true, "needs_clarification": false}},
+    {"name": "sale without quantity forces clarification",
+     "input": {"intent": "record_sale", "item": "Maggi", "qty": null, "unit": null, "language": "hi", "needs_clarification": false},
+     "expect": {"valid": true, "can_write": false, "needs_clarification": true}},
+    {"name": "query does not write",
+     "input": {"intent": "query_stock", "item": "paneer", "qty": null, "unit": null, "language": "mr", "needs_clarification": false},
+     "expect": {"valid": true, "can_write": false, "needs_clarification": false}},
+    {"name": "unknown intent",
+     "input": {"intent": "unknown", "item": null, "qty": null, "unit": null, "language": "en", "needs_clarification": false},
+     "expect": {"valid": true, "can_write": false, "needs_clarification": false}},
+    {"name": "intent outside the enum",
+     "input": {"intent": "delete_stock", "item": "Maggi", "qty": 2, "unit": null, "language": "en", "needs_clarification": false},
+     "expect": {"valid": false}},
+    {"name": "negative quantity",
+     "input": {"intent": "add_stock", "item": "Maggi", "qty": -2, "unit": null, "language": "en", "needs_clarification": false},
+     "expect": {"valid": false}},
+    {"name": "language outside the enum",
+     "input": {"intent": "add_stock", "item": "Maggi", "qty": 2, "unit": null, "language": "ta", "needs_clarification": false},
+     "expect": {"valid": false}},
+    {"name": "not JSON",
+     "input": "Sure! The intent is add_stock.",
+     "expect": {"valid": false}}
+  ]
+}

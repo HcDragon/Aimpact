@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "smartinventory/voice_intent.json",
+  "title": "Voice note intent",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["intent", "item", "qty", "unit", "language", "needs_clarification"],
+  "properties": {
+    "intent": {"enum": ["add_stock", "record_sale", "query_stock", "query_sales", "unknown"]},
+    "item": {"type": ["string", "null"]},
+    "qty": {"type": ["number", "null"], "exclusiveMinimum": 0},
+    "unit": {"type": ["string", "null"]},
+    "language": {"enum": ["hi", "mr", "en", "hinglish"]},
+    "needs_clarification": {"type": "boolean"}
+  }
+}

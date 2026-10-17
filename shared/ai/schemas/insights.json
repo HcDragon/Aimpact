@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "smartinventory/insights.json",
+  "title": "Plain-language insights",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["tips"],
+  "properties": {
+    "tips": {
+      "type": "array",
+      "maxItems": 5,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["title", "text", "source_keys"],
+        "properties": {
+          "title": {"type": "string", "maxLength": 60},
+          "text": {"type": "string", "maxLength": 280},
+          "source_keys": {"type": "array", "items": {"type": "string"}}
+        }
+      }
+    }
+  }
+}
