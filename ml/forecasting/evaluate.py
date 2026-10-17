@@ -76,11 +76,12 @@ def evaluate_daily(full: pd.DataFrame, first_sale: pd.Series, categories: dict, 
         b = seasonal_naive(train[item], h, cfg)
         per_item.append({
             "item": item, "tier": tier,
+            "actual": float(np.abs(y).sum()),
             "model": {"method": m["method"].iloc[0], "mape": mape(y, m["yhat"].to_numpy()),
-                      "wape": wape(y, m["yhat"].to_numpy()),
+                      "wape": wape(y, m["yhat"].to_numpy()), "abs_err": float(np.abs(y - m["yhat"].to_numpy()).sum()),
                       "coverage": coverage(y, m["yhat_lower"].to_numpy(), m["yhat_upper"].to_numpy())},
             "baseline": {"method": "seasonal_naive", "mape": mape(y, b["yhat"].to_numpy()),
-                         "wape": wape(y, b["yhat"].to_numpy()),
+                         "wape": wape(y, b["yhat"].to_numpy()), "abs_err": float(np.abs(y - b["yhat"].to_numpy()).sum()),
                          "coverage": coverage(y, b["yhat_lower"].to_numpy(), b["yhat_upper"].to_numpy())},
         })
         if simulate_policy:
@@ -99,8 +100,11 @@ def evaluate_daily(full: pd.DataFrame, first_sale: pd.Series, categories: dict, 
     for tier in sorted({r["tier"] for r in per_item}):
         rows = [r for r in per_item if r["tier"] == tier]
         agg = {}
+        demand = sum(r["actual"] for r in rows)
         for side in ("model", "baseline"):
-            agg[side] = {k: _mean([r[side][k] for r in rows]) for k in ("mape", "wape", "coverage")}
+            agg[side] = {k: _mean([r[side][k] for r in rows]) for k in ("mape", "coverage")}
+            # Pooled WAPE (total error / total demand): averaging per-item WAPE lets slow sellers dominate.
+            agg[side]["wape"] = round(sum(r[side]["abs_err"] for r in rows) / demand * 100, 2) if demand else None
         winner = "model" if (agg["model"]["wape"] or 1e9) <= (agg["baseline"]["wape"] or 1e9) else "seasonal_naive"
         tiers_out[tier] = {"n_items": len(rows), **agg, "winner": winner}
         tier_sims = [s for s in sims if s["tier"] == tier]

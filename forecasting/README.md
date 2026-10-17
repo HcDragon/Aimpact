@@ -51,7 +51,7 @@ def forecast_business(business: dict, products: list[dict], series: dict[str, di
 
 def bundles_for_business(business: dict, db, today: date) -> list[dict]:   # optional (Apriori)
     """
-    db.select("sale_items", {"select": "sale_id,product_id", "business_id": f"eq.{business['id']}"})
+    db.select("sale_items", {"select": "id,sale_id,product_id", "business_id": f"eq.{business['id']}", "order": "id"})  # paging needs a unique order
     Return [{"antecedent_ids": [uuid], "consequent_ids": [uuid], "support": float,
              "confidence": float, "lift": float}]
     """

@@ -63,3 +63,27 @@ def test_tiers(cfg):
     assert [k for k, v in tiers.items() if v == "prophet"] == ["i0", "i1"]  # top 20% of 9 -> 2
     assert tiers["i5"] == tiers["i6"] == "category"
     assert tiers["i3"] == "moving_avg"
+
+
+def test_tier_wape_is_pooled_not_averaged(cfg):
+    from forecasting.evaluate import evaluate_daily
+
+    idx = pd.date_range("2026-01-01", periods=140, freq="D")
+    rng = np.random.default_rng(1)
+    # One busy item and one that sells almost nothing: a per-item average would be dominated by the slow one.
+    daily = pd.DataFrame({"busy": rng.poisson(100, 140).astype(float), "slow": (rng.random(140) < 0.05).astype(float)}, index=idx)
+    first = pd.Series({c: idx[0] for c in daily.columns})
+    import forecasting.evaluate as ev
+    real, real_tiers = ev.forecast_items, ev.assign_tiers
+    ev.assign_tiers = lambda train, *a, **k: {c: "moving_avg" for c in train.columns}  # one shared tier
+    ev.forecast_items = lambda train, tiers, *a, **k: pd.concat([
+        moving_average(train[i], cfg["forecasting"]["holdout_days"], cfg).assign(item=i, method="moving_avg") for i in tiers])
+    try:
+        out = evaluate_daily(daily, first, {}, cfg, simulate_policy=False)
+    finally:
+        ev.forecast_items, ev.assign_tiers = real, real_tiers
+    items = out["items"]
+    pooled = sum(r["model"]["abs_err"] for r in items) / sum(r["actual"] for r in items) * 100
+    tier = next(iter(out["tiers"].values()))
+    assert tier["model"]["wape"] == pytest.approx(pooled, abs=0.01)
+    assert tier["model"]["wape"] < 30  # the busy item dominates, as it should

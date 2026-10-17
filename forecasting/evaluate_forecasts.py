@@ -27,9 +27,9 @@ from settings import REPORTS_DIR, load_config  # noqa: E402
 def load_series(db: Supabase, business: dict, today: date):
     bid = business["id"]
     since = (today - timedelta(days=HISTORY_DAYS)).isoformat()
-    usage = db.select("daily_usage", {"select": "product_id,day,qty", "business_id": f"eq.{bid}", "day": f"gte.{since}"})
+    usage = db.select("daily_usage", {"select": "product_id,day,qty", "business_id": f"eq.{bid}", "day": f"gte.{since}", "order": "product_id,day"})
     products = {p["id"]: p for p in db.select("products", {
-        "select": "id,name,category,unit,kind", "business_id": f"eq.{bid}", "is_active": "eq.true", "kind": "neq.dish"})}
+        "select": "id,name,category,unit,kind", "business_id": f"eq.{bid}", "is_active": "eq.true", "kind": "neq.dish", "order": "id"})}
     series: dict[str, dict[date, float]] = defaultdict(dict)
     for u in usage:
         if u["product_id"] in products:
@@ -45,7 +45,7 @@ def main() -> None:
     cfg = load_config()
     db = Supabase()
     today = datetime.now(IST).date()
-    params = {"select": "id,name,business_type,lead_time_days", "business_type": "neq.wholesaler"}
+    params = {"select": "id,name,business_type,lead_time_days", "business_type": "neq.wholesaler", "order": "id"}
     if a.business_id:
         params["id"] = f"eq.{a.business_id}"
 

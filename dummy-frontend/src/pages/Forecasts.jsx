@@ -3,7 +3,7 @@
 import { FlaskConical, Gauge, LineChart as LineChartIcon } from "lucide-react";
 import { useState } from "react";
 import { BarPairs, LineChart } from "../components/charts.jsx";
-import { Callout, Card, Field, Kpi, Kpis, Loaded, MethodPill, Page, Pill, Select, Table, useLoad } from "../components/ui.jsx";
+import { Card, Field, Kpi, Kpis, Loaded, MethodPill, Page, Pill, Select, Table, useLoad } from "../components/ui.jsx";
 import { from, loadProducts, mine, q } from "../lib/api.js";
 import { METHOD_LABEL, daysAgo, fmtDate, fmtDateTime, istToday, pct, qty, round1 } from "../lib/format.js";
 
@@ -107,11 +107,7 @@ function Evaluation({ ev }) {
   const label = ([k]) => TIER_LABEL[k] ?? k;
   return (
     <Card title={title}>
-      {ev.illustrative ? (
-        <Callout tone="warn">Illustrative sample, not measured. Run <code>python forecasting/evaluate_forecasts.py</code> on real data for actual scores.</Callout>
-      ) : (
-        <p className="text-muted">Holdout: {ev.holdout_days} days from {fmtDate(ev.holdout_start)} · run {fmtDateTime(ev.generated_at)} · <code>{ev.command}</code></p>
-      )}
+      <p className="text-muted">Holdout: {ev.holdout_days} days from {fmtDate(ev.holdout_start)} · run {fmtDateTime(ev.generated_at)} · <code>{ev.command}</code></p>
       <BarPairs a="Model error" b="Baseline error" format={(v) => pct(v)}
         rows={tiers.map((t) => ({ label: label(t), a: t[1].model?.wape, b: t[1].baseline?.wape }))} />
       <Table rows={tiers} rowKey={([k]) => k} columns={[

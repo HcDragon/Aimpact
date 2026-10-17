@@ -75,8 +75,8 @@ def bundles_for_business(business: dict, db, today: date) -> list[dict]:
 
     cfg = load_config()
     since = (today - timedelta(days=cfg["shop"]["bundles"]["lookback_days"])).isoformat()
-    rows = db.select("sale_items", {"select": "sale_id,product_id,sales!inner(sold_at)",
-                                    "business_id": f"eq.{business['id']}", "sales.sold_at": f"gte.{since}"})
+    rows = db.select("sale_items", {"select": "id,sale_id,product_id,sales!inner(sold_at)",
+                                    "business_id": f"eq.{business['id']}", "sales.sold_at": f"gte.{since}", "order": "id"})
     if not rows:
         return []
     items = pd.DataFrame([{"sale_id": r["sale_id"], "product_id": r["product_id"],

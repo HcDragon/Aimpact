@@ -9,7 +9,7 @@ import {
 import { useCallback, useEffect, useState } from "react";
 import { Button, Select, useToast } from "./components/ui.jsx";
 import { SUPABASE_URL } from "./config.js";
-import { OFFLINE_DEMO, current, q, supabase } from "./lib/api.js";
+import { current, q, supabase } from "./lib/api.js";
 import { Alerts, Assistant } from "./pages/Assistant.jsx";
 import { Forecasts } from "./pages/Forecasts.jsx";
 import { Home } from "./pages/Home.jsx";
@@ -175,10 +175,8 @@ export default function App() {
           <span className="hidden text-xs text-muted capitalize sm:inline">{type}{business.city ? ` · ${business.city}` : ""}</span>
           <span className="flex-1" />
           {switcher}
-          <span title={OFFLINE_DEMO ? "Runs entirely in the browser with generated sample data; no backend." : "Seeded demo data"}
-            className="rounded-full bg-warn/10 px-2.5 py-0.5 text-[11px] font-medium text-warn ring-1 ring-warn/25 ring-inset">
-            {OFFLINE_DEMO ? "Offline demo · sample data" : "Demo data"}
-          </span>
+          <span title="Seeded demo data in the hosted Supabase project"
+            className="rounded-full bg-warn/10 px-2.5 py-0.5 text-[11px] font-medium text-warn ring-1 ring-warn/25 ring-inset">Demo data</span>
         </header>
         <main className="min-w-0 flex-1 px-6 py-7">
           <PageComponent key={business.id + route.id} />

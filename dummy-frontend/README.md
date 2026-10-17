@@ -19,19 +19,6 @@ Layout: `src/App.jsx` (shell, auth, routing), `src/pages/*.jsx` (one file per se
 `src/components/` (UI kit and SVG charts), `src/lib/` (Supabase API, formatting, camera/mic helpers),
 `src/index.css` (Tailwind theme tokens, light and dark).
 
-## Offline demo mode (current default)
-
-`VITE_DEMO_MODE=offline` in `.env.local` runs the whole app in the browser with generated sample
-data and no backend (`src/demo/`). Sales, purchases, stock counts and wastage update the numbers
-live; reorder points, profit/GST, dead stock, perishable risk, prep list and bundles are computed
-from the sample sales. Model-vs-baseline scores are labelled illustrative, and bill scan / voice /
-assistant replies are rule-based stand-ins. Everything resets on page reload.
-
-**Switch back to the real backend:** delete `src/demo/`, remove the three `OFFLINE DEMO` lines in
-`src/lib/api.js` (the import, `OFFLINE_DEMO` and the ternary) and the `OFFLINE_DEMO` badge text in
-`src/App.jsx`, drop `VITE_DEMO_MODE` from `.env.local`, then push the schema and seed to the
-project (`supabase db push --include-seed`).
-
 There is no login screen: the app signs in a demo account in the background (RLS needs a user) and
 the top bar switches between the shop, restaurant and wholesaler accounts.
 

@@ -36,6 +36,10 @@ class Supabase:
         self.h = {"apikey": key, "Authorization": f"Bearer {key}", "Content-Type": "application/json"}
 
     def select(self, table: str, params: dict) -> list[dict]:
+        """Paged GET. Callers must pass a unique `order`: without one Postgres may return rows in a
+        different order per page, so paging silently duplicates some rows and drops others."""
+        if "order" not in params:
+            raise ValueError(f"select({table!r}) needs an 'order' param for stable paging")
         rows, offset, page = [], 0, 1000
         while True:
             r = requests.get(f"{self.url}/{table}", params=params,
@@ -84,9 +88,9 @@ def run(db: Supabase, business: dict, horizon: int, model) -> int:
     bid = business["id"]
     today = datetime.now(IST).date()
     since = (today - timedelta(days=HISTORY_DAYS)).isoformat()
-    usage = db.select("daily_usage", {"select": "product_id,day,qty", "business_id": f"eq.{bid}", "day": f"gte.{since}"})
+    usage = db.select("daily_usage", {"select": "product_id,day,qty", "business_id": f"eq.{bid}", "day": f"gte.{since}", "order": "product_id,day"})
     products = {p["id"]: p for p in db.select("products", {
-        "select": "id,name,category,unit,kind", "business_id": f"eq.{bid}", "is_active": "eq.true", "kind": "neq.dish"})}
+        "select": "id,name,category,unit,kind", "business_id": f"eq.{bid}", "is_active": "eq.true", "kind": "neq.dish", "order": "id"})}
 
     series: dict[str, dict[date, float]] = defaultdict(dict)
     for u in usage:
@@ -103,9 +107,9 @@ def run(db: Supabase, business: dict, horizon: int, model) -> int:
         if business.get("business_type") == "restaurant":
             # Dish forecasts drive the morning prep list (prep_list()); reorder_suggestions() ignores dishes.
             dishes = {p["id"]: p for p in db.select("products", {
-                "select": "id,name,category,unit,kind", "business_id": f"eq.{bid}", "is_active": "eq.true", "kind": "eq.dish"})}
+                "select": "id,name,category,unit,kind", "business_id": f"eq.{bid}", "is_active": "eq.true", "kind": "eq.dish", "order": "id"})}
             dish_sales = db.select("daily_product_sales", {"select": "product_id,day,qty", "business_id": f"eq.{bid}",
-                                                           "kind": "eq.dish", "day": f"gte.{since}"})
+                                                           "kind": "eq.dish", "day": f"gte.{since}", "order": "product_id,day"})
             dish_series: dict[str, dict[date, float]] = defaultdict(dict)
             for u in dish_sales:
                 d = date.fromisoformat(u["day"])
@@ -149,7 +153,7 @@ def main() -> None:
     db = Supabase()
     model = load_model()
     print("model:", "forecasting/model.py" if model else "moving-average baseline")
-    params = {"select": "id,name,business_type", "business_type": "neq.wholesaler"}
+    params = {"select": "id,name,business_type", "business_type": "neq.wholesaler", "order": "id"}
     if a.business_id:
         params["id"] = f"eq.{a.business_id}"
     for b in db.select("businesses", params):

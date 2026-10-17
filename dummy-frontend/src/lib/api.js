@@ -2,13 +2,8 @@
 // App keeps it up to date so pages can call rpc()/fn() without passing the business around.
 import { createClient } from "@supabase/supabase-js";
 import { SUPABASE_ANON_KEY, SUPABASE_URL } from "../config.js";
-import { createDemoClient } from "../demo/client.js"; // OFFLINE DEMO
 
-// OFFLINE DEMO: VITE_DEMO_MODE=offline swaps in an in-browser stand-in backend with sample data
-// (src/demo/). To remove it, delete src/demo/ and these demo lines; the real client below stays.
-export const OFFLINE_DEMO = import.meta.env.VITE_DEMO_MODE === "offline";
-
-export const supabase = OFFLINE_DEMO ? createDemoClient() : createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 export const current = { session: null, business: null, products: [] };
 
 export const isRestaurant = () => current.business?.business_type === "restaurant";

@@ -1,0 +1,714 @@
+{
+  "generated_at": "2026-10-17T09:01:26+00:00",
+  "model_version": "ml-0.1.0",
+  "businesses": {
+    "aaaaaaaa-0000-0000-0000-000000000001": {
+      "holdout_start": "2026-09-19",
+      "holdout_days": 28,
+      "tiers": {
+        "category": {
+          "n_items": 12,
+          "model": {
+            "mape": 79.01,
+            "coverage": 42.86,
+            "wape": 59.47
+          },
+          "baseline": {
+            "mape": 88.26,
+            "coverage": 89.29,
+            "wape": 68.34
+          },
+          "winner": "model",
+          "policy_simulation": {
+            "dynamic": {
+              "stockout_days": 0.33,
+              "avg_on_hand": 22.08
+            },
+            "fixed": {
+              "stockout_days": 0.5,
+              "avg_on_hand": 19.88
+            }
+          }
+        },
+        "moving_avg": {
+          "n_items": 2,
+          "model": {
+            "mape": 51.96,
+            "coverage": 96.43,
+            "wape": 43.96
+          },
+          "baseline": {
+            "mape": 53.3,
+            "coverage": 89.29,
+            "wape": 56.4
+          },
+          "winner": "model",
+          "policy_simulation": {
+            "dynamic": {
+              "stockout_days": 0.0,
+              "avg_on_hand": 38.87
+            },
+            "fixed": {
+              "stockout_days": 0.0,
+              "avg_on_hand": 34.59
+            }
+          }
+        },
+        "prophet": {
+          "n_items": 4,
+          "model": {
+            "mape": 58.83,
+            "coverage": 49.11,
+            "wape": 40.34
+          },
+          "baseline": {
+            "mape": 40.07,
+            "coverage": 86.61,
+            "wape": 32.61
+          },
+          "winner": "seasonal_naive",
+          "policy_simulation": {
+            "dynamic": {
+              "stockout_days": 0.0,
+              "avg_on_hand": 105.83
+            },
+            "fixed": {
+              "stockout_days": 0.0,
+              "avg_on_hand": 103.76
+            }
+          }
+        }
+      },
+      "items": [
+        {
+          "item": "0ac92680-29d0-460a-b63e-7daf368252c3",
+          "tier": "category",
+          "actual": 53.0,
+          "model": {
+            "method": "category",
+            "mape": 94.62717425243603,
+            "wape": 85.20702571438372,
+            "abs_err": 45.159723628623375,
+            "coverage": 32.142857142857146
+          },
+          "baseline": {
+            "method": "seasonal_naive",
+            "mape": 111.5530303030303,
+            "wape": 100.0,
+            "abs_err": 53.0,
+            "coverage": 92.85714285714286
+          }
+        },
+        {
+          "item": "1bbf4166-40be-4896-9fc0-1f6654486bcf",
+          "tier": "moving_avg",
+          "actual": 38.0,
+          "model": {
+            "method": "moving_avg",
+            "mape": 62.308673469387756,
+            "wape": 122.36842105263159,
+            "abs_err": 46.50000000000001,
+            "coverage": 96.42857142857143
+          },
+          "baseline": {
+            "method": "seasonal_naive",
+            "mape": 53.27380952380951,
+            "wape": 89.47368421052632,
+            "abs_err": 34.0,
+            "coverage": 96.42857142857143
+          }
+        },
+        {
+          "item": "2c1f087e-4770-4671-91b0-9a006ffa56cc",
+          "tier": "prophet",
+          "actual": 335.0,
+          "model": {
+            "method": "prophet",
+            "mape": 56.08306979654289,
+            "wape": 36.47591139241825,
+            "abs_err": 122.19430316460112,
+            "coverage": 64.28571428571429
+          },
+          "baseline": {
+            "method": "seasonal_naive",
+            "mape": 38.93121957407672,
+            "wape": 31.94029850746269,
+            "abs_err": 107.0,
+            "coverage": 92.85714285714286
+          }
+        },
+        {
+          "item": "3d123133-518e-4ecf-a383-bbc24115bcea",
+          "tier": "category",
+          "actual": 132.0,
+          "model": {
+            "method": "category",
+            "mape": 82.87732154743223,
+            "wape": 56.38535622919887,
+            "abs_err": 74.42867022254251,
+            "coverage": 28.57142857142857
+          },
+          "baseline": {
+            "method": "seasonal_naive",
+            "mape": 70.72802197802199,
+            "wape": 57.57575757575758,
+            "abs_err": 76.0,
+            "coverage": 82.14285714285714
+          }
+        },
+        {
+          "item": "422bba47-d3ef-4f66-ae73-e5631b73654b",
+          "tier": "category",
+          "actual": 171.0,
+          "model": {
+            "method": "category",
+            "mape": 95.44867948242904,
+            "wape": 60.477144100837286,
+            "abs_err": 103.41591641243177,
+            "coverage": 57.14285714285714
+          },
+          "baseline": {
+            "method": "seasonal_naive",
+            "mape": 69.16666666666667,
+            "wape": 52.046783625730995,
+            "abs_err": 89.0,
+            "coverage": 100.0
+          }
+        },
+        {
+          "item": "53ce740f-0a9d-425a-a0ce-274294252414",
+          "tier": "category",
+          "actual": 126.0,
+          "model": {
+            "method": "category",
+            "mape": 75.67305331790087,
+            "wape": 42.05260316295403,
+            "abs_err": 52.98627998532208,
+            "coverage": 46.42857142857143
+          },
+          "baseline": {
+            "method": "seasonal_naive",
+            "mape": 67.28872318158032,
+            "wape": 53.96825396825397,
+            "abs_err": 68.0,
+            "coverage": 89.28571428571429
+          }
+        },
+        {
+          "item": "586b47e2-21e3-4c0b-b9dc-09c1cbb2015b",
+          "tier": "category",
+          "actual": 75.0,
+          "model": {
+            "method": "category",
+            "mape": 91.0488118563917,
+            "wape": 80.26962452678839,
+            "abs_err": 60.20221839509129,
+            "coverage": 21.428571428571427
+          },
+          "baseline": {
+            "method": "seasonal_naive",
+            "mape": 85.94202898550725,
+            "wape": 86.66666666666667,
+            "abs_err": 65.0,
+            "coverage": 96.42857142857143
+          }
+        },
+        {
+          "item": "6a413099-dc37-4cb4-b204-734e253c590d",
+          "tier": "category",
+          "actual": 75.0,
+          "model": {
+            "method": "category",
+            "mape": 40.33927392296828,
+            "wape": 46.10388579086441,
+            "abs_err": 34.57791434314831,
+            "coverage": 60.71428571428571
+          },
+          "baseline": {
+            "method": "seasonal_naive",
+            "mape": 89.44761904761904,
+            "wape": 78.66666666666666,
+            "abs_err": 59.0,
+            "coverage": 96.42857142857143
+          }
+        },
+        {
+          "item": "79ebe8b6-5dac-4506-b27c-68e15e77b6c2",
+          "tier": "category",
+          "actual": 176.0,
+          "model": {
+            "method": "category",
+            "mape": 128.66485636700892,
+            "wape": 64.92154382062424,
+            "abs_err": 114.26191712429866,
+            "coverage": 32.142857142857146
+          },
+          "baseline": {
+            "method": "seasonal_naive",
+            "mape": 171.20207173778604,
+            "wape": 80.68181818181817,
+            "abs_err": 142.0,
+            "coverage": 64.28571428571429
+          }
+        },
+        {
+          "item": "a00a8a69-6a87-48aa-8897-030dae91edad",
+          "tier": "category",
+          "actual": 49.0,
+          "model": {
+            "method": "category",
+            "mape": 86.0046346290064,
+            "wape": 90.43171653712812,
+            "abs_err": 44.31154110319278,
+            "coverage": 71.42857142857143
+          },
+          "baseline": {
+            "method": "seasonal_naive",
+            "mape": 98.18840579710147,
+            "wape": 95.91836734693877,
+            "abs_err": 47.0,
+            "coverage": 96.42857142857143
+          }
+        },
+        {
+          "item": "a187e820-4db5-46ca-89f3-b4be88a67075",
+          "tier": "prophet",
+          "actual": 315.0,
+          "model": {
+            "method": "prophet",
+            "mape": 78.33687418471325,
+            "wape": 49.02515498593913,
+            "abs_err": 154.42923820570826,
+            "coverage": 53.57142857142857
+          },
+          "baseline": {
+            "method": "seasonal_naive",
+            "mape": 43.07866398307575,
+            "wape": 37.77777777777778,
+            "abs_err": 119.0,
+            "coverage": 96.42857142857143
+          }
+        },
+        {
+          "item": "a73092d1-7810-465e-a39e-36ee0472e058",
+          "tier": "category",
+          "actual": 78.0,
+          "model": {
+            "method": "category",
+            "mape": 78.53306444282254,
+            "wape": 77.60341016440437,
+            "abs_err": 60.5306599282354,
+            "coverage": 25.0
+          },
+          "baseline": {
+            "method": "seasonal_naive",
+            "mape": 96.20181405895691,
+            "wape": 110.25641025641026,
+            "abs_err": 86.0,
+            "coverage": 82.14285714285714
+          }
+        },
+        {
+          "item": "c447c02b-732e-4793-a18c-ea2331f951c4",
+          "tier": "prophet",
+          "actual": 868.0,
+          "model": {
+            "method": "prophet",
+            "mape": 50.194007415452525,
+            "wape": 43.94478555440322,
+            "abs_err": 381.4407386122199,
+            "coverage": 21.428571428571427
+          },
+          "baseline": {
+            "method": "seasonal_naive",
+            "mape": 30.2679903131816,
+            "wape": 27.419354838709676,
+            "abs_err": 238.0,
+            "coverage": 89.28571428571429
+          }
+        },
+        {
+          "item": "c450d092-535e-4448-af67-c4c25bd848c7",
+          "tier": "category",
+          "actual": 246.0,
+          "model": {
+            "method": "category",
+            "mape": 62.75168504379381,
+            "wape": 36.96084204568011,
+            "abs_err": 90.92367143237307,
+            "coverage": 64.28571428571429
+          },
+          "baseline": {
+            "method": "seasonal_naive",
+            "mape": 61.2744794887652,
+            "wape": 42.27642276422765,
+            "abs_err": 104.0,
+            "coverage": 100.0
+          }
+        },
+        {
+          "item": "cf096153-554d-4324-bfbd-5457402b252f",
+          "tier": "category",
+          "actual": 65.0,
+          "model": {
+            "method": "category",
+            "mape": 48.25672873072811,
+            "wape": 66.0519473107836,
+            "abs_err": 42.933765752009336,
+            "coverage": 32.142857142857146
+          },
+          "baseline": {
+            "method": "seasonal_naive",
+            "mape": 53.17460317460318,
+            "wape": 69.23076923076923,
+            "abs_err": 45.0,
+            "coverage": 82.14285714285714
+          }
+        },
+        {
+          "item": "ef23842a-72fe-4cf0-9817-f2d048966908",
+          "tier": "prophet",
+          "actual": 592.0,
+          "model": {
+            "method": "prophet",
+            "mape": 50.69977976161968,
+            "wape": 32.621812450757304,
+            "abs_err": 193.12112970848324,
+            "coverage": 57.14285714285714
+          },
+          "baseline": {
+            "method": "seasonal_naive",
+            "mape": 48.001430147162125,
+            "wape": 37.83783783783784,
+            "abs_err": 224.0,
+            "coverage": 67.85714285714286
+          }
+        },
+        {
+          "item": "f01c8b52-9af8-4e7c-8df2-3c5cc33c81d4",
+          "tier": "category",
+          "actual": 30.0,
+          "model": {
+            "method": "category",
+            "mape": 63.91513470073724,
+            "wape": 117.1028102889802,
+            "abs_err": 35.13084308669406,
+            "coverage": 42.857142857142854
+          },
+          "baseline": {
+            "method": "seasonal_naive",
+            "mape": 85.0,
+            "wape": 126.66666666666666,
+            "abs_err": 38.0,
+            "coverage": 89.28571428571429
+          }
+        },
+        {
+          "item": "ff72ff4d-172c-4a9a-9ea5-b4103beb5b3c",
+          "tier": "moving_avg",
+          "actual": 306.0,
+          "model": {
+            "method": "moving_avg",
+            "mape": 41.61936860991482,
+            "wape": 34.2203548085901,
+            "abs_err": 104.71428571428572,
+            "coverage": 96.42857142857143
+          },
+          "baseline": {
+            "method": "seasonal_naive",
+            "mape": 53.31941896805342,
+            "wape": 52.28758169934641,
+            "abs_err": 160.0,
+            "coverage": 82.14285714285714
+          }
+        }
+      ],
+      "name": "Sharma Kirana Store"
+    },
+    "aaaaaaaa-0000-0000-0000-000000000002": {
+      "holdout_start": "2026-09-19",
+      "holdout_days": 28,
+      "tiers": {
+        "category": {
+          "n_items": 9,
+          "model": {
+            "mape": 37.71,
+            "coverage": 34.52,
+            "wape": 30.51
+          },
+          "baseline": {
+            "mape": 26.94,
+            "coverage": 91.67,
+            "wape": 26.58
+          },
+          "winner": "seasonal_naive",
+          "policy_simulation": {
+            "dynamic": {
+              "stockout_days": 0.0,
+              "avg_on_hand": 8.32
+            },
+            "fixed": {
+              "stockout_days": 0.0,
+              "avg_on_hand": 8.83
+            }
+          }
+        },
+        "prophet": {
+          "n_items": 3,
+          "model": {
+            "mape": 41.26,
+            "coverage": 21.43,
+            "wape": 38.92
+          },
+          "baseline": {
+            "mape": 19.53,
+            "coverage": 88.1,
+            "wape": 21.54
+          },
+          "winner": "seasonal_naive",
+          "policy_simulation": {
+            "dynamic": {
+              "stockout_days": 0.0,
+              "avg_on_hand": 19.53
+            },
+            "fixed": {
+              "stockout_days": 0.0,
+              "avg_on_hand": 20.17
+            }
+          }
+        }
+      },
+      "items": [
+        {
+          "item": "0ada84de-45c9-4ebb-9eb4-61badccc3495",
+          "tier": "category",
+          "actual": 51.6,
+          "model": {
+            "method": "category",
+            "mape": 80.61531719379595,
+            "wape": 54.72168019818774,
+            "abs_err": 28.236386982264875,
+            "coverage": 25.0
+          },
+          "baseline": {
+            "method": "seasonal_naive",
+            "mape": 56.43510520390219,
+            "wape": 45.736434108527135,
+            "abs_err": 23.6,
+            "coverage": 100.0
+          }
+        },
+        {
+          "item": "197fa461-71c1-440b-82e6-6075b5c64ae6",
+          "tier": "prophet",
+          "actual": 94.21000000000001,
+          "model": {
+            "method": "prophet",
+            "mape": 35.23504681575167,
+            "wape": 31.138057234525597,
+            "abs_err": 29.335163720646566,
+            "coverage": 39.285714285714285
+          },
+          "baseline": {
+            "method": "seasonal_naive",
+            "mape": 19.1695484622183,
+            "wape": 19.690054134380635,
+            "abs_err": 18.549999999999997,
+            "coverage": 92.85714285714286
+          }
+        },
+        {
+          "item": "45ac71a9-5cf8-45da-8b5a-fe9ebbda971d",
+          "tier": "category",
+          "actual": 59.7,
+          "model": {
+            "method": "category",
+            "mape": 36.61346549324879,
+            "wape": 30.00181015051096,
+            "abs_err": 17.911080659855045,
+            "coverage": 42.857142857142854
+          },
+          "baseline": {
+            "method": "seasonal_naive",
+            "mape": 31.586298396369866,
+            "wape": 29.64824120603015,
+            "abs_err": 17.700000000000003,
+            "coverage": 92.85714285714286
+          }
+        },
+        {
+          "item": "89d94d71-90eb-459d-aaa8-5b9beace33f5",
+          "tier": "category",
+          "actual": 34.025,
+          "model": {
+            "method": "category",
+            "mape": 27.1055202524513,
+            "wape": 24.91132309420968,
+            "abs_err": 8.476077682804844,
+            "coverage": 35.714285714285715
+          },
+          "baseline": {
+            "method": "seasonal_naive",
+            "mape": 16.081759658782847,
+            "wape": 17.472446730345336,
+            "abs_err": 5.945,
+            "coverage": 96.42857142857143
+          }
+        },
+        {
+          "item": "8bfb4baf-61fb-4250-86ee-25ddd08f9a06",
+          "tier": "category",
+          "actual": 4.474,
+          "model": {
+            "method": "category",
+            "mape": 42.81370653179019,
+            "wape": 35.63776918095305,
+            "abs_err": 1.5944337931558394,
+            "coverage": 25.0
+          },
+          "baseline": {
+            "method": "seasonal_naive",
+            "mape": 28.660739491257424,
+            "wape": 28.833258828788555,
+            "abs_err": 1.29,
+            "coverage": 96.42857142857143
+          }
+        },
+        {
+          "item": "9c4990e5-fb35-43a6-8bde-55d489bcf090",
+          "tier": "prophet",
+          "actual": 127.58999999999999,
+          "model": {
+            "method": "prophet",
+            "mape": 51.25231889527614,
+            "wape": 46.700927664094905,
+            "abs_err": 59.58571360661868,
+            "coverage": 25.0
+          },
+          "baseline": {
+            "method": "seasonal_naive",
+            "mape": 26.318576130846665,
+            "wape": 27.909710792381848,
+            "abs_err": 35.61,
+            "coverage": 85.71428571428571
+          }
+        },
+        {
+          "item": "a4e3d3eb-9c22-4334-bc3b-5f1490f0cfd9",
+          "tier": "category",
+          "actual": 3.132,
+          "model": {
+            "method": "category",
+            "mape": 28.304007218870332,
+            "wape": 25.78623913631038,
+            "abs_err": 0.8076250097492411,
+            "coverage": 39.285714285714285
+          },
+          "baseline": {
+            "method": "seasonal_naive",
+            "mape": 24.178015542912163,
+            "wape": 24.648786717752238,
+            "abs_err": 0.772,
+            "coverage": 78.57142857142857
+          }
+        },
+        {
+          "item": "ad7bbe43-ce42-4f86-ae2b-e9523a721e25",
+          "tier": "prophet",
+          "actual": 81.85,
+          "model": {
+            "method": "prophet",
+            "mape": 37.29231039172542,
+            "wape": 35.74298910262529,
+            "abs_err": 29.2556365804988,
+            "coverage": 0.0
+          },
+          "baseline": {
+            "method": "seasonal_naive",
+            "mape": 13.094174016213373,
+            "wape": 13.744654856444722,
+            "abs_err": 11.250000000000004,
+            "coverage": 85.71428571428571
+          }
+        },
+        {
+          "item": "ad98f433-9685-45ba-9986-5c2240a32d00",
+          "tier": "category",
+          "actual": 72.3,
+          "model": {
+            "method": "category",
+            "mape": 34.425195902414444,
+            "wape": 28.151824679629122,
+            "abs_err": 20.353769243371854,
+            "coverage": 32.142857142857146
+          },
+          "baseline": {
+            "method": "seasonal_naive",
+            "mape": 24.725967820011668,
+            "wape": 27.800829875518673,
+            "abs_err": 20.1,
+            "coverage": 92.85714285714286
+          }
+        },
+        {
+          "item": "ca873d66-669a-44ae-aa1d-377a4d3d01d2",
+          "tier": "category",
+          "actual": 78.3,
+          "model": {
+            "method": "category",
+            "mape": 28.304007218870332,
+            "wape": 25.786239136310385,
+            "abs_err": 20.19062524373103,
+            "coverage": 39.285714285714285
+          },
+          "baseline": {
+            "method": "seasonal_naive",
+            "mape": 24.17801554291216,
+            "wape": 24.648786717752238,
+            "abs_err": 19.3,
+            "coverage": 78.57142857142857
+          }
+        },
+        {
+          "item": "cf3dbe56-8a3b-4160-a84f-fa2f0bf42a12",
+          "tier": "category",
+          "actual": 87.69000000000001,
+          "model": {
+            "method": "category",
+            "mape": 29.304350839929523,
+            "wape": 25.5734326767041,
+            "abs_err": 22.42534311420183,
+            "coverage": 39.285714285714285
+          },
+          "baseline": {
+            "method": "seasonal_naive",
+            "mape": 19.446155038311225,
+            "wape": 20.743528338465044,
+            "abs_err": 18.19,
+            "coverage": 96.42857142857143
+          }
+        },
+        {
+          "item": "d1df9bb9-2f1b-4cc1-9171-a35604a0acf0",
+          "tier": "category",
+          "actual": 34.73,
+          "model": {
+            "method": "category",
+            "mape": 31.873614970970177,
+            "wape": 28.72602015178421,
+            "abs_err": 9.976546798714654,
+            "coverage": 32.142857142857146
+          },
+          "baseline": {
+            "method": "seasonal_naive",
+            "mape": 17.151817183508967,
+            "wape": 18.226317304923697,
+            "abs_err": 6.33,
+            "coverage": 92.85714285714286
+          }
+        }
+      ],
+      "name": "Annapurna Bhojanalay"
+    }
+  }
+}
