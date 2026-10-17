@@ -1,3 +1,4 @@
+# Forecasting, analytics and evaluation (used by forecasting/model.py too).
 prophet==1.5.0
 pandas>=2.2
 numpy>=1.26
@@ -7,9 +8,4 @@ pyyaml>=6.0
 jsonschema>=4.21
 python-dotenv>=1.0
 google-genai>=1.30
-supabase>=2.10
 pytest>=8.0
-easyocr>=1.7.2
-opencv-python-headless>=4.9
-pillow>=10.0
-pytesseract>=0.3.10   # optional; needs the tesseract binary

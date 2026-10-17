@@ -10,9 +10,12 @@ Tiers:
 from __future__ import annotations
 
 import datetime as dt
+import json
 import math
 
 import pandas as pd
+
+from settings import REPORTS_DIR
 
 
 def daily_sales(sale_items: pd.DataFrame, item_col: str, end: dt.date, start: dt.date | None = None) -> pd.DataFrame:
@@ -60,3 +63,12 @@ def assign_tiers(daily: pd.DataFrame, first_sale: pd.Series, categories: dict[st
         else:
             tiers[item] = "moving_avg"
     return tiers
+
+
+def baseline_overrides(business_id: str) -> dict[str, str]:
+    """Tiers where the last evaluation showed the seasonal-naive baseline winning."""
+    path = REPORTS_DIR / "forecast_metrics.json"
+    if not path.exists():
+        return {}
+    metrics = json.loads(path.read_text()).get("businesses", {}).get(business_id, {})
+    return {tier: "seasonal_naive" for tier, m in metrics.get("tiers", {}).items() if m.get("winner") == "seasonal_naive"}

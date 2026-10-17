@@ -18,22 +18,13 @@ import pandas as pd
 
 from db import get_store
 from forecasting.prophet_job import forecast_items
-from forecasting.tiers import assign_tiers, daily_sales, first_sale_dates
+from forecasting.tiers import assign_tiers, baseline_overrides, daily_sales, first_sale_dates
 from inventory.reorder import build_rows
 from restaurant.ingredient_demand import ingredient_forecast, ingredient_history, perishable_flags
 from restaurant.prep_list import prep_list
 from settings import REPORTS_DIR, as_of_date, load_config
 from shop.bundles import bundle_rules
 from shop.dead_stock import dead_stock
-
-
-def tier_overrides(business_id: str) -> dict[str, str]:
-    """Use the baseline for any tier where the last evaluation showed it winning."""
-    path = REPORTS_DIR / "forecast_metrics.json"
-    if not path.exists():
-        return {}
-    metrics = json.loads(path.read_text()).get("businesses", {}).get(business_id, {})
-    return {tier: "seasonal_naive" for tier, m in metrics.get("tiers", {}).items() if m.get("winner") == "seasonal_naive"}
 
 
 def product_meta(products, suppliers, supplier_prices, stock_batches, purchase_orders, as_of, cfg) -> pd.DataFrame:
@@ -87,7 +78,7 @@ def run(business_id: str, backend: str | None = None, as_of: dt.date | None = No
         categories = t["products"].set_index("product_id")["category"].to_dict()
     tiers = assign_tiers(daily, first_sale_dates(t["sale_items"], id_col), categories, cfg)
     fc = forecast_items(daily, tiers, categories, cfg, horizon, start=pd.Timestamp(as_of),
-                        overrides=tier_overrides(business_id))
+                        overrides=baseline_overrides(business_id))
 
     meta = product_meta(t["products"], t["suppliers"], t["supplier_prices"], t["stock_batches"],
                         t["purchase_orders"], as_of, cfg)

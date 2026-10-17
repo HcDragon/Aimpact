@@ -20,6 +20,14 @@ def load_config(path: str | None = None) -> dict:
         return yaml.safe_load(f)
 
 
+@lru_cache(maxsize=1)
+def load_ai_config() -> dict:
+    """config/ai.json: model names shared with the Edge Functions."""
+    import json
+    with open(REPO_DIR / "config" / "ai.json") as f:
+        return json.load(f)
+
+
 def as_of_date(cfg: dict | None = None) -> dt.date:
     """The run date: forecasts start here, history ends the day before."""
     cfg = cfg or load_config()

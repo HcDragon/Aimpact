@@ -97,6 +97,8 @@ def test_full_bill_with_header(cfg):
     assert [(i["qty"], i["unit_price"], i["gst_rate"], i["line_total"]) for i in b["items"]] == [
         (48, 8.5, 18, 408.0), (24, 12.0, 12, 288.0), (10, 22.0, 5, 220.0)]  # "2200" -> 22.00 by arithmetic
     assert b["items"][0]["name"] == "Parle-G 80g"
+    assert out["extra"]["invoice_no"] == "118"
+    assert [i["hsn"] for i in out["extra"]["items"]] == ["19053100", "19023010", "25010020"]
     assert any("decimal point restored" in w for w in b["warnings"])
     v = validate_bill_scan(b)
     assert v["valid"] and v["accepted"], v

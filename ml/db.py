@@ -1,8 +1,10 @@
 """Data access for the ML job.
 
-Two backends with one interface:
-  LocalStore    - CSVs under ml/data/ (seeded synthetic history; no network).
-  SupabaseStore - Postgres via supabase-py with the service role key from .env.
+LocalStore reads CSVs under ml/data/ for offline experiments and evaluation.
+
+Production data lives in Supabase with the schema in supabase/migrations/. There,
+forecasts are produced by forecasting/run_forecasts.py, which calls this package
+through forecasting/model.py. This store is not a Supabase client.
 
 The ML side only writes to `forecasts` and ML-owned columns
 (products.embedding, reviews.sentiment/aspects). Every read and write is
@@ -11,8 +13,6 @@ scoped to one business_id.
 
 from __future__ import annotations
 
-import json
-import os
 from pathlib import Path
 
 import pandas as pd
@@ -106,52 +106,6 @@ class LocalStore:
         return len(rows)
 
 
-class SupabaseStore:
-    PAGE = 1000
-
-    def __init__(self):
-        from dotenv import load_dotenv
-        from supabase import create_client
-
-        load_dotenv(ml_path(".env"))
-        url, key = os.environ.get("SUPABASE_URL"), os.environ.get("SUPABASE_SERVICE_ROLE_KEY")
-        if not url or not key:
-            raise RuntimeError("SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY must be set in ml/.env")
-        self.client = create_client(url, key)
-
-    def read(self, table: str, business_id: str | None) -> pd.DataFrame:
-        if business_id is None:
-            raise BusinessScopeError("Supabase reads must be scoped to a business_id")
-        rows, start = [], 0
-        while True:
-            res = (self.client.table(table).select("*").eq("business_id", business_id)
-                   .range(start, start + self.PAGE - 1).execute())
-            rows.extend(res.data)
-            if len(res.data) < self.PAGE:
-                break
-            start += self.PAGE
-        return pd.DataFrame(rows, columns=None if rows else TABLES.get(table))
-
-    def write_forecasts(self, business_id: str, rows: pd.DataFrame) -> int:
-        _check_scope(rows, business_id)
-        self.client.table("forecasts").delete().eq("business_id", business_id).execute()
-        records = json.loads(rows[TABLES["forecasts"]].to_json(orient="records", date_format="iso"))
-        for i in range(0, len(records), 500):
-            self.client.table("forecasts").insert(records[i:i + 500]).execute()
-        return len(records)
-
-    def update_columns(self, table: str, business_id: str, key: str, rows: pd.DataFrame) -> int:
-        _check_owned(table, rows.columns, key)
-        _check_scope(rows, business_id)
-        records = json.loads(rows.to_json(orient="records"))
-        for rec in records:
-            ident = rec.pop(key)
-            rec.pop("business_id", None)
-            (self.client.table(table).update(rec).eq(key, ident)
-             .eq("business_id", business_id).execute())
-        return len(records)
-
-
 def _check_owned(table: str, columns, key: str) -> None:
     extra = set(columns) - {key, "business_id"} - ML_OWNED_COLUMNS.get(table, set())
     if extra:
@@ -163,5 +117,6 @@ def get_store(backend: str | None = None):
     if backend == "local":
         return LocalStore()
     if backend == "supabase":
-        return SupabaseStore()
+        raise SystemExit("Supabase runs go through forecasting/run_forecasts.py (model: forecasting/model.py) "
+                         "and forecasting/evaluate_forecasts.py; ml/ jobs only read local CSVs.")
     raise ValueError(f"unknown storage backend: {backend}")

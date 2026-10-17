@@ -3,7 +3,7 @@
 Free-tier friendly: one queue per process with minimum spacing between calls,
 exponential backoff with jitter on 429/5xx, and an on-disk cache keyed on
 model + prompt + input bytes so re-running an eval or the demo costs nothing.
-Model names come from config.yaml. The API key is read from ml/.env (GEMINI_API_KEY).
+Model names come from config/ai.json. The API key is read from ml/.env or the repo-root .env.
 """
 
 from __future__ import annotations
@@ -16,7 +16,7 @@ import threading
 import time
 from pathlib import Path
 
-from settings import SHARED_AI_DIR, load_config, ml_path
+from settings import REPO_DIR, SHARED_AI_DIR, load_ai_config, load_config, ml_path
 
 _lock = threading.Lock()
 _last_call = 0.0
@@ -44,8 +44,11 @@ class Gemini:
         from dotenv import load_dotenv
 
         load_dotenv(ml_path(".env"))
-        self.cfg = load_config()["gemini"]
-        self.api_key = api_key or os.environ.get("GEMINI_API_KEY")
+        load_dotenv(REPO_DIR / ".env")
+        ai = load_ai_config()["gemini"]
+        self.cfg = {**load_config()["gemini"], "flash_model": ai["vision_model"],
+                    "embedding_model": ai["embedding_model"], "embedding_dim": ai["embedding_dimensions"]}
+        self.api_key = api_key or os.environ.get(ai["api_key_env"])
         self.cache_dir = ml_path(self.cfg["cache_dir"])
         self._client = None
 

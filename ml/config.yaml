@@ -4,17 +4,14 @@
 model_version: "ml-0.1.0"
 
 storage:
-  # "local" reads/writes CSVs under ml/data/ (dataset supplied separately; see data/README.md).
-  # "supabase" uses SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY from .env.
+  # ml/ jobs read CSVs under ml/data/ (see data/README.md). Supabase runs go through
+  # forecasting/run_forecasts.py, which uses this package via forecasting/model.py.
   backend: local
   local_dir: data
 
 gemini:
-  # Confirm both names against the models available on our key (open question).
-  # Changing embedding_model means re-running embeddings/reembed.py.
-  flash_model: gemini-flash-latest
-  embedding_model: gemini-embedding-2
-  embedding_dim: 768
+  # Model names come from config/ai.json (gemini.vision_model / embedding_model /
+  # embedding_dimensions), the repo's single source of truth. Only pacing lives here.
   max_retries: 5
   backoff_base_seconds: 2.0
   min_seconds_between_calls: 4.0   # free-tier pacing

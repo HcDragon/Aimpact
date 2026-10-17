@@ -1,4 +1,4 @@
-"""Re-embed every catalog item after changing gemini.embedding_model or embedding_dim (FR-G3).
+"""Re-embed every catalog item after changing gemini.embedding_model or embedding_dimensions in config/ai.json (FR-G3).
 
     python -m embeddings.reembed --business <id> [--business <id> ...] [--backend local|supabase]
 
@@ -11,7 +11,7 @@ from __future__ import annotations
 import argparse
 
 from embeddings.embed_catalog import embed_business
-from settings import load_config
+from settings import load_ai_config
 
 
 def main() -> None:
@@ -19,8 +19,8 @@ def main() -> None:
     p.add_argument("--business", action="append", required=True)
     p.add_argument("--backend", choices=["local", "supabase"])
     a = p.parse_args()
-    g = load_config()["gemini"]
-    print(f"re-embedding with {g['embedding_model']} ({g['embedding_dim']} dims)")
+    g = load_ai_config()["gemini"]
+    print(f"re-embedding with {g['embedding_model']} ({g['embedding_dimensions']} dims)")
     for b in a.business:
         print(f"  {b}: {embed_business(b, a.backend, everything=True)} products")
 

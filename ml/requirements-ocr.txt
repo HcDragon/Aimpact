@@ -1,0 +1,6 @@
+# Bill OCR service (ml/ocr/). Pulls in PyTorch; not needed for the nightly forecasting job.
+-r requirements.txt
+easyocr>=1.7.2
+opencv-python-headless>=4.9
+pillow>=10.0
+pytesseract>=0.3.10   # optional; needs the tesseract binary

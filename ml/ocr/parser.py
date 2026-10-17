@@ -80,6 +80,8 @@ class ParsedItem:
     arithmetic_ok: bool
     min_conf: float
     notes: list[str] = field(default_factory=list)
+    hsn: str | None = None
+    mrp: float | None = None
 
     def as_schema(self) -> dict:
         return {"name": self.name, "qty": self.qty, "unit": self.unit, "unit_price": self.unit_price,
@@ -235,8 +237,20 @@ def parse_item(line: Line, roles: dict[str, float] | None, page_w: float, tol: f
         used = [tn for tn in (q_tn, p_tn, t_tn) if tn]
         notes.append("qty x price does not match line total")
     unit = (nums[best["qi"]].unit if best else None) or (units[0] if units else None)
+    hsn = next((re.sub(r"\D", "", tn.num.raw) for tn, r in zip(nums, roles_of) if r == "hsn"), None)
+    mrp = next((tn.num.value for tn, r in zip(nums, roles_of) if r == "mrp"), None)
     return ParsedItem(line.index, name, qty, unit, price, gst, total, ok,
-                      min(tn.token.conf for tn in used), notes)
+                      min(tn.token.conf for tn in used), notes, hsn or None, mrp)
+
+
+_INVOICE_NO = re.compile(r"\b(?:invoice|inv|bill|memo)\s*(?:no|number|num|#)\.?\s*[:#\-]?\s*([A-Z0-9][A-Z0-9/\-]{0,19})", re.I)
+
+
+def find_invoice_no(lines: list[Line]) -> str | None:
+    for ln in lines:
+        if m := _INVOICE_NO.search(ln.text):
+            return m.group(1).strip("-/")
+    return None
 
 
 def find_supplier(lines: list[Line], stop_index: int) -> tuple[str | None, float]:
@@ -355,6 +369,11 @@ def parse_bill(lines: list[Line], page_w: float, cfg: dict, today: dt.date | Non
             "items": [it.as_schema() for it in items],
             "invoice_total": total,
             "warnings": warnings,
+        },
+        # Fields outside bill_scan.json, used by the Edge Function adapter (ocr/server.py).
+        "extra": {
+            "invoice_no": find_invoice_no(lines),
+            "items": [{"hsn": it.hsn, "mrp": it.mrp} for it in items],
         },
         "debug": {
             "header_line": header[0] if header else None,

@@ -57,20 +57,14 @@ def simulate(demand: np.ndarray, rop: np.ndarray, lead: int, pack: float, start_
     return {"stockout_days": stockout_days, "avg_on_hand": float(np.mean(excess))}
 
 
-def evaluate_business(store, business_id: str, as_of: dt.date, cfg: dict) -> dict:
-    fc_cfg = cfg["forecasting"]
-    h = fc_cfg["holdout_days"]
-    biz = store.read("businesses", business_id)
-    restaurant = not biz.empty and biz.iloc[0]["type"] == "restaurant"
-    id_col = "dish_id" if restaurant else "product_id"
-    sale_items = store.read("sale_items", business_id)
-    products = store.read("products", business_id)
-
-    full = daily_sales(sale_items, id_col, end=as_of)
+def evaluate_daily(full: pd.DataFrame, first_sale: pd.Series, categories: dict, cfg: dict,
+                   simulate_policy: bool = True, lead_times: dict | None = None) -> dict:
+    """Holdout evaluation on a wide daily frame (days x items) that ends the day before the run date."""
+    h = cfg["forecasting"]["holdout_days"]
     cutoff = full.index.max() - pd.Timedelta(days=h - 1)
     train, test = full[full.index < cutoff], full[full.index >= cutoff]
-    categories = {} if restaurant else products.set_index("product_id")["category"].to_dict()
-    first = first_sale_dates(sale_items[pd.to_datetime(sale_items["sold_at"], format="ISO8601") < cutoff], id_col)
+    first = first_sale[first_sale < cutoff]
+    train = train[[c for c in train.columns if c in first.index]]
     tiers = {k: v for k, v in assign_tiers(train, first, categories, cfg).items() if v != "rule"}
     model_fc = forecast_items(train, tiers, categories, cfg, h, start=cutoff)
 
@@ -89,9 +83,9 @@ def evaluate_business(store, business_id: str, as_of: dt.date, cfg: dict) -> dic
                          "wape": wape(y, b["yhat"].to_numpy()),
                          "coverage": coverage(y, b["yhat_lower"].to_numpy(), b["yhat_upper"].to_numpy())},
         })
-        if not restaurant:
+        if simulate_policy:
             yhat, upper = m["yhat"].to_numpy(), m["yhat_upper"].to_numpy()
-            lead = lead_default
+            lead = int((lead_times or {}).get(item, lead_default))
             dyn_rop = np.array([yhat[t:t + lead].sum() + (upper[t:t + lead] - yhat[t:t + lead]).sum()
                                 for t in range(h)])
             mean = float(train[item].iloc[-28:].mean())
@@ -114,9 +108,21 @@ def evaluate_business(store, business_id: str, as_of: dt.date, cfg: dict) -> dic
             tiers_out[tier]["policy_simulation"] = {
                 p: {k: _mean([s[p][k] for s in tier_sims]) for k in ("stockout_days", "avg_on_hand")}
                 for p in ("dynamic", "fixed")}
-    return {"holdout_start": cutoff.date().isoformat(), "holdout_days": h,
-            "is_synthetic": bool(biz.iloc[0].get("is_synthetic", False)) if not biz.empty else None,
-            "tiers": tiers_out, "items": per_item}
+    return {"holdout_start": cutoff.date().isoformat(), "holdout_days": h, "tiers": tiers_out, "items": per_item}
+
+
+def evaluate_business(store, business_id: str, as_of: dt.date, cfg: dict) -> dict:
+    """Local CSV store (ml/data/). For Supabase use forecasting/evaluate_forecasts.py."""
+    biz = store.read("businesses", business_id)
+    restaurant = not biz.empty and biz.iloc[0]["type"] == "restaurant"
+    id_col = "dish_id" if restaurant else "product_id"
+    sale_items = store.read("sale_items", business_id)
+    products = store.read("products", business_id)
+    full = daily_sales(sale_items, id_col, end=as_of)
+    categories = {} if restaurant else products.set_index("product_id")["category"].to_dict()
+    out = evaluate_daily(full, first_sale_dates(sale_items, id_col), categories, cfg, simulate_policy=not restaurant)
+    out["is_synthetic"] = bool(biz.iloc[0].get("is_synthetic", False)) if not biz.empty else None
+    return out
 
 
 def _mean(xs):

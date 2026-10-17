@@ -1,0 +1,4 @@
+requests==2.32.3
+python-dotenv==1.0.1
+# Model used by forecasting/model.py (Prophet, category forecasts, Apriori bundles):
+-r ../ml/requirements.txt
